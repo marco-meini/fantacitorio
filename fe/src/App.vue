@@ -26,17 +26,17 @@
             </li>
             <li class="nav-item">
               <router-link
-                :class="{ active: activePage === 'about' }"
+                :class="{ active: activePage === 'punteggi' }"
                 class="nav-link"
-                to="/about"
-                >About</router-link
+                to="/punteggi"
+                >Punteggi</router-link
               >
             </li>
           </ul>
         </div>
       </div>
     </nav>
-    <div class="container p-5 text-bg-light">
+    <div class="container px-5 pb-5 text-bg-light">
       <RouterView />
     </div>
   </div>

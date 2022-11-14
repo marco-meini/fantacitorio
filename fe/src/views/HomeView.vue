@@ -1,10 +1,10 @@
 <template>
   <div>
-    <h1>Classifica</h1>
+    <h1 class="mb-4">Classifica</h1>
     <Loading :loading="loading" />
     <div v-if="!loading">
-      <table class="table">
-        <thead>
+      <table class="table table-bordered">
+        <thead class="table-dark">
           <tr>
             <th scope="col">Squadra</th>
             <th scope="col">Punteggio</th>
@@ -16,7 +16,7 @@
               <b>{{ item.nome_sq }}</b
               >&nbsp;({{ item.giocatore_sq }})
             </td>
-            <td>{{ item.punteggio }}</td>
+            <td class="text-end" style="width: 10px;">{{ item.punteggio }}</td>
           </tr>
         </tbody>
       </table>
