@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <img src="@/assets/header.jpg" class="img-fluid" alt="..." />
-    <nav class="navbar navbar-expand-lg bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container-fluid">
         <button
           class="navbar-toggler"
@@ -33,10 +33,15 @@
               >
             </li>
           </ul>
+          <ul class="navbar-nav d-flex">
+            <li class="nav-link">
+              <router-link to="/admin" class="nav-link">Admin</router-link>
+            </li>
+          </ul>
         </div>
       </div>
     </nav>
-    <div class="container px-5 pb-5 text-bg-light">
+    <div class="container px-5 py-3 text-bg-light">
       <RouterView />
     </div>
   </div>
