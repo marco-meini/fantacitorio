@@ -6,5 +6,9 @@ export const sessionStore = defineStore("session", {
     getSessionUser: (state) => state.user,
     isAuthenticated: (state) => (state.user ? true : false)
   },
-  actions: {}
+  actions: {
+    setSession(user) {
+      this.user = user;
+    }
+  }
 });

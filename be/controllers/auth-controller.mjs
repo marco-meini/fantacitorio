@@ -8,6 +8,7 @@ class AuthController extends Abstract_Controller {
     super(env, "auth");
     this.router.post("/login", this.login.bind(this));
     this.router.post("/logout", AuthenticationMiddleware.checkAuthentication(env), this.logout.bind(this));
+    this.router.get("/me", AuthenticationMiddleware.checkAuthentication(env), this.me.bind(this));
   }
 
   /**
@@ -56,6 +57,20 @@ class AuthController extends Abstract_Controller {
     try {
       await this.env.mongoModel.sessions.delete(request.session.access_token);
       response.send();
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  /**
+   *
+   * @param {import("../middlewares/auth-middlewares.mjs").SessionRequest} request
+   * @param {import("express").Response} response
+   * @param {import("express").NextFunction} next
+   */
+  async me(request, response, next) {
+    try {
+      response.send(request.session);
     } catch (e) {
       next(e);
     }

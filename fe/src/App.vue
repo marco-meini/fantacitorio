@@ -27,7 +27,7 @@
               <router-link to="/login" class="nav-link">Admin Login</router-link>
             </li>
             <li v-if="session.isAuthenticated" class="nav-link">
-              <button type="button" class="btn btn-link">Logout</button>
+              <router-link class="nav-link" to="/#" @click="logout">Logout</router-link>
             </li>
           </ul>
         </div>
@@ -40,6 +40,7 @@
 </template>
 
 <script>
+import { Auth } from "./api/auth";
 import { sessionStore } from "./stores/session";
 
 export default {
@@ -52,6 +53,28 @@ export default {
     activePage() {
       return this.$route.name;
     }
+  },
+  methods: {
+    async checkAuthentication() {
+      try {
+        let user = await Auth.me();
+        this.session.setSession(user);
+      } catch (e) {
+        this.session.setSession(null);
+      }
+    },
+    async logout() {
+      try {
+        await Auth.logout();
+        sessionStorage.removeItem("access_token");
+        this.session.setSession(null);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  },
+  created() {
+    this.checkAuthentication();
   }
 };
 </script>
