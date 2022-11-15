@@ -1,4 +1,4 @@
-import { PgClientManager } from "../lib/pg-client-manager.mjs";
+import { PgClientManager } from "../../lib/pg-client-manager.mjs";
 
 class Abstract_PgModel {
   /**

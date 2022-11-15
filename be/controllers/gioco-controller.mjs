@@ -1,29 +1,12 @@
-import * as express from "express";
-import { Environment } from "../environment.mjs";
+import { Abstract_Controller } from "./abstract-controller.mjs";
 
-export class GiocoController {
-  /**
-   * @type {express.Router}
-   */
-  router;
-  /**
-   * @type {Environment}
-   * @private
-   */
-  env;
-  /**
-   * @type {string}
-   */
-  route;
-
+class GiocoController extends Abstract_Controller {
   /**
    *
    * @param {Environment} env
    */
   constructor(env) {
-    this.env = env;
-    this.route = "gioco";
-    this.router = express.Router();
+    super(env, "gioco");
     this.router.get("/classifica", this.classifica.bind(this));
   }
 
@@ -35,10 +18,12 @@ export class GiocoController {
    */
   async classifica(request, response, next) {
     try {
-      let classifica = await this.env.pgModels.gioco.classifica();
+      let classifica = await this.env.pgModel.gioco.classifica();
       response.send(classifica);
     } catch (e) {
       next(e);
     }
   }
 }
+
+export { GiocoController };

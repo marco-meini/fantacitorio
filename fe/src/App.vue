@@ -10,32 +10,24 @@
           data-bs-target="#navbarSupportedContent"
           aria-controls="navbarSupportedContent"
           aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
+          aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <router-link
-                :class="{ active: activePage === 'home' }"
-                class="nav-link"
-                to="/"
-                >Home</router-link
-              >
+              <router-link :class="{ active: activePage === 'home' }" class="nav-link" to="/">Home</router-link>
             </li>
             <li class="nav-item">
-              <router-link
-                :class="{ active: activePage === 'punteggi' }"
-                class="nav-link"
-                to="/punteggi"
-                >Punteggi</router-link
-              >
+              <router-link :class="{ active: activePage === 'punteggi' }" class="nav-link" to="/punteggi">Punteggi</router-link>
             </li>
           </ul>
           <ul class="navbar-nav d-flex">
-            <li class="nav-link">
-              <router-link to="/admin" class="nav-link">Admin</router-link>
+            <li v-if="!session.isAuthenticated" class="nav-link">
+              <router-link to="/login" class="nav-link">Admin Login</router-link>
+            </li>
+            <li v-if="session.isAuthenticated" class="nav-link">
+              <button type="button" class="btn btn-link">Logout</button>
             </li>
           </ul>
         </div>
@@ -48,11 +40,18 @@
 </template>
 
 <script>
+import { sessionStore } from "./stores/session";
+
 export default {
+  setup() {
+    const session = sessionStore();
+
+    return { session };
+  },
   computed: {
     activePage() {
       return this.$route.name;
-    },
-  },
+    }
+  }
 };
 </script>

@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
-import { giocoStore } from "../stores/session";
+import { sessionStore } from "../stores/session";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -39,7 +39,9 @@ const router = createRouter({
 });
 
 router.beforeEach((to) => {
-  if (to.meta.requiresAuth && !giocoStore().isAuthenticated) {
+  const session = sessionStore();
+
+  if (to.meta.requiresAuth && !session.isAuthenticated) {
     return "/login";
   }
 });

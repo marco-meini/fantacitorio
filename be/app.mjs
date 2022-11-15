@@ -2,16 +2,19 @@
 
 import express, { json } from "express";
 import { join } from "path";
+import { AuthController } from "./controllers/auth-controller.mjs";
 import { GiocoController } from "./controllers/gioco-controller.mjs";
 import { Environment } from "./environment.mjs";
-import { HttpResponseStatus } from "./lib/index.mjs";
+import { HttpResponseStatus } from "./lib/enums.mjs";
 
 class App {
   constructor() {
     this.env = new Environment();
     this.express = express();
     this.express.use(json());
+    const auth = new AuthController(this.env);
     const gioco = new GiocoController(this.env);
+    this.express.use(join(this.env.config.root, auth.route), auth.router);
     this.express.use(join(this.env.config.root, gioco.route), gioco.router);
     this.express.use(join(this.env.config.root, "/healthcheck"), (request, response) => {
       response.send({ uptime: process.uptime() });

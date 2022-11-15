@@ -1,8 +1,9 @@
 "use strict";
 
-import * as bcrypt from "bcryptjs";
+import bcrypt from "bcryptjs";
 import * as fs from "fs";
 import * as crypto from "crypto";
+import _ from "lodash";
 
 class Crypt {
   /**
@@ -11,15 +12,7 @@ class Crypt {
    * @returns {Promise<string>}
    */
   static hash(plain) {
-    return new Promise((resolve, reject) => {
-      bcrypt.hash(plain, 10, (error, hashed) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(hashed);
-        }
-      });
-    });
+    return bcrypt.hash(plain, 10);
   }
 
   /**
@@ -28,17 +21,19 @@ class Crypt {
    * @param {string} hash
    * @returns {Promise<boolean>}
    */
-  static compare(plain, hash) {
-    return new Promise((resolve, reject) => {
-      bcrypt
-        .compare(plain, hash)
-        .then((res) => {
-          resolve(res);
-        })
-        .catch((error) => {
-          reject(error);
-        });
-    });
+  static async compare(plain, hash) {
+    try {
+      if (_.isEmpty(plain)) {
+        return Promise.resolve(false);
+      } else if (_.isEmpty(hash)) {
+        return Promise.resolve(false);
+      } else {
+        let result = await bcrypt.compare(plain, hash);
+        return Promise.resolve(result);
+      }
+    } catch (e) {
+      return Promise.reject(e);
+    }
   }
 
   /**
