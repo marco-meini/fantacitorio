@@ -1,5 +1,5 @@
 <template>
   <div>
-    <h1>Work in progress</h1>
+    <PageTitle title="Punteggi" />
   </div>
 </template>

@@ -1,8 +1,9 @@
 <template>
   <div>
-    <h1 class="mb-4">Classifica</h1>
+    <PageTitle title="Classifica" />
     <Loading :loading="loading" />
-    <div v-if="!loading">
+    <GenericError v-if="error" />
+    <div v-if="!loading && !error">
       <table class="table table-bordered">
         <thead class="table-dark">
           <tr>
@@ -16,7 +17,7 @@
               <b>{{ item.nome_sq }}</b
               >&nbsp;({{ item.giocatore_sq }})
             </td>
-            <td class="text-end" style="width: 10px;">{{ item.punteggio }}</td>
+            <td class="text-end" style="width: 10px">{{ item.punteggio }}</td>
           </tr>
         </tbody>
       </table>
@@ -26,29 +27,28 @@
 
 <script>
 import { GiocoAPIs } from "../api/gioco";
-import Loading from "../components/Loading.vue";
 
 export default {
   data: () => ({
     loading: false,
     classifica: [],
+    error: false
   }),
   methods: {
     async fetchClassifica() {
       try {
         this.loading = true;
+        this.error = false;
         this.classifica = await GiocoAPIs.getClassifica();
       } catch (e) {
         console.error(e);
+        this.error = true;
       }
       this.loading = false;
-    },
+    }
   },
   created() {
     this.fetchClassifica();
-  },
-  components: {
-    Loading
-  },
+  }
 };
-</script> 
+</script>

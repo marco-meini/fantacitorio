@@ -10,9 +10,8 @@ import { Abstract_PgModel } from "./abstract-pg-model.mjs";
  */
 
 class Gioco extends Abstract_PgModel {
-
   /**
-   * 
+   *
    * @returns {Promise<IClassifica>}
    */
   async classifica() {
@@ -29,6 +28,38 @@ class Gioco extends Abstract_PgModel {
       order by punteggio desc`;
       let result = await this.__connection.query({ sql: sql });
       return Promise.resolve(result.rows);
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
+  async giornate() {
+    try {
+      let result = await this.__connection.query({ sql: "select distinct puntata_pn from punteggi" });
+      return Promise.resolve(result.rows);
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
+  async politici() {
+    try {
+      let result = await this.__connection.query({ sql: "select * from politici order by nome_pl" });
+      return Promise.resolve(result.rows);
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
+  /**
+   * 
+   * @param {string} giornata 
+   * @returns 
+   */
+  async deleteGiornata(giornata) {
+    try {
+      await this.__connection.query({ sql: "delete punteggi whwre puntata_pn=$1", replacements: [giornata] });
+      return Promise.resolve();
     } catch (e) {
       return Promise.reject(e);
     }

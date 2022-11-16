@@ -1,14 +1,14 @@
 import { defineStore } from "pinia";
 
 export const sessionStore = defineStore("session", {
-  state: () => ({ user: null }),
+  state: () => ({ user: null, loaded: false }),
   getters: {
-    getSessionUser: (state) => state.user,
     isAuthenticated: (state) => (state.user ? true : false)
   },
   actions: {
     setSession(user) {
       this.user = user;
+      this.loaded = true;
     }
   }
 });

@@ -21,13 +21,17 @@
             <li class="nav-item">
               <router-link :class="{ active: activePage === 'punteggi' }" class="nav-link" to="/punteggi">Punteggi</router-link>
             </li>
+            <li v-if="session.isAuthenticated" class="nav-item">
+              <router-link :class="{ active: activePage === 'gestione-giornate' || activePage === 'gestione-giornata' }" class="nav-link" to="/gestione-giornate">Gestione Giornate</router-link>
+            </li>
           </ul>
           <ul class="navbar-nav d-flex">
-            <li v-if="!session.isAuthenticated" class="nav-link">
-              <router-link to="/login" class="nav-link">Admin Login</router-link>
+            <li v-if="!session.isAuthenticated">
+              <router-link to="/login" class="btn btn-danger">Admin Login</router-link>
             </li>
-            <li v-if="session.isAuthenticated" class="nav-link">
-              <router-link class="nav-link" to="/#" @click="logout">Logout</router-link>
+            <span v-if="session.isAuthenticated" class="navbar-text mx-3">{{session.user.name}}</span>
+            <li v-if="session.isAuthenticated">
+              <router-link class="btn btn-danger" to="/#" @click="logout">Logout</router-link>
             </li>
           </ul>
         </div>
@@ -42,7 +46,6 @@
 
 <script>
 import { Auth } from "./api/auth";
-import Loading from "./components/Loading.vue";
 import { sessionStore } from "./stores/session";
 
 export default {
@@ -84,9 +87,6 @@ export default {
   },
   created() {
     this.initApplication();
-  },
-  components: {
-    Loading
   }
 };
 </script>

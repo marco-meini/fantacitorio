@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="mb-4">Login</h1>
+    <PageTitle title="Login" />
     <form class="col-lg-6">
       <div class="alert alert-danger mb-4" v-if="error" role="alert">Autenticazione fallita</div>
       <div class="form-floating mb-3">
@@ -11,7 +11,8 @@
         <input type="password" v-model="password" class="form-control" id="passwordInput" placeholder="-" />
         <label for="passwordInput">password</label>
       </div>
-      <button type="button" class="btn btn-primary" @click="login">Login</button>
+      <button v-if="!loading" type="button" class="btn btn-primary" @click="login">Login</button>
+      <Loading :loading="loading" />
     </form>
   </div>
 </template>
