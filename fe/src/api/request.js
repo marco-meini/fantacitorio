@@ -10,7 +10,7 @@ export class ApiRequest {
    *  authenticate?: boolean,
    *  query?: object
    * }} options
-   * @returns {object}
+   * @returns {Promise<import("axios").AxiosResponse>}
    */
   static async get(endpoint, options = {}) {
     try {
@@ -25,14 +25,13 @@ export class ApiRequest {
         }
       }
       if (options.query) axiosOptions.params = options.query;
-      let response = await axios.get(`${BASE_ROUTE}/${endpoint}`, axiosOptions);
-      if (response.status < 400) {
-        return Promise.resolve(response.data);
-      } else {
-        throw new Error(`Error ${response.status} calling ${endpoint} api`);
-      }
+      return await axios.get(`${BASE_ROUTE}/${endpoint}`, axiosOptions);
     } catch (e) {
-      return Promise.reject(e);
+      if (e.response) {
+        return Promise.resolve(e.response);
+      } else {
+        return Promise.reject(e);
+      }
     }
   }
 
@@ -44,7 +43,7 @@ export class ApiRequest {
    *  query?: object,
    *  data?: object
    * }} options
-   * @returns {object}
+   * @returns {Promise<import("axios").AxiosResponse>}
    */
   static async post(endpoint, options = {}) {
     try {
@@ -59,14 +58,13 @@ export class ApiRequest {
         }
       }
       if (options.query) axiosOptions.data = options.query;
-      let response = await axios.post(`${BASE_ROUTE}/${endpoint}`, options.data || null, axiosOptions);
-      if (response.status < 400) {
-        return Promise.resolve(response.data);
-      } else {
-        throw new Error(`Error ${response.status} calling ${endpoint} api`);
-      }
+      return await axios.post(`${BASE_ROUTE}/${endpoint}`, options.data || null, axiosOptions);
     } catch (e) {
-      return Promise.reject(e);
+      if (e.response) {
+        return Promise.resolve(e.response);
+      } else {
+        return Promise.reject(e);
+      }
     }
   }
 
@@ -78,7 +76,7 @@ export class ApiRequest {
    *  query?: object,
    *  data?: object
    * }} options
-   * @returns {object}
+   * @returns {Promise<import("axios").AxiosResponse>}
    */
   static async delete(endpoint, options = {}) {
     try {
@@ -94,14 +92,13 @@ export class ApiRequest {
       }
       if (options.query) axiosOptions.data = options.query;
       if (options.data) axiosOptions.data = options.data;
-      let response = await axios.delete(`${BASE_ROUTE}/${endpoint}`, axiosOptions);
-      if (response.status < 400) {
-        return Promise.resolve(response.data);
-      } else {
-        throw new Error(`Error ${response.status} calling ${endpoint} api`);
-      }
+      return await axios.delete(`${BASE_ROUTE}/${endpoint}`, axiosOptions);
     } catch (e) {
-      return Promise.reject(e);
+      if (e.response) {
+        return Promise.resolve(e.response);
+      } else {
+        return Promise.reject(e);
+      }
     }
   }
 
@@ -113,7 +110,7 @@ export class ApiRequest {
    *  query?: object,
    *  data?: object
    * }} options
-   * @returns {object}
+   * @returns {Promise<import("axios").AxiosResponse>}
    */
   static async put(endpoint, options = {}) {
     try {
@@ -128,14 +125,13 @@ export class ApiRequest {
         }
       }
       if (options.query) axiosOptions.data = options.query;
-      let response = await axios.put(`${BASE_ROUTE}/${endpoint}`, options.data || null, axiosOptions);
-      if (response.status < 400) {
-        return Promise.resolve(response.data);
-      } else {
-        throw new Error(`Error ${response.status} calling ${endpoint} api`);
-      }
+      return await axios.put(`${BASE_ROUTE}/${endpoint}`, options.data || null, axiosOptions);
     } catch (e) {
-      return Promise.reject(e);
+      if (e.response) {
+        return Promise.resolve(e.response);
+      } else {
+        return Promise.reject(e);
+      }
     }
   }
 }

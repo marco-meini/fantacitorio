@@ -1,4 +1,5 @@
 import moment from "moment";
+import { HttpResponseStatus } from "../lib/enums.mjs";
 import { AuthenticationMiddleware } from "../middlewares/auth-middlewares.mjs";
 import { Abstract_Controller } from "./abstract-controller.mjs";
 
@@ -75,7 +76,7 @@ class GiocoController extends Abstract_Controller {
        * }}
        */
       let data = request.body;
-      let result = { success: true, messages: [] };
+      let result = { success: true, description: "Giornata salvata", messages: [] };
 
       let date = moment(data.data, "YYYY-MM-DD");
       if (!date.isValid()) {
@@ -104,6 +105,13 @@ class GiocoController extends Abstract_Controller {
           result.success = false;
           result.messages.push("Ci sono politici duplicati");
         }
+      }
+
+      if (result.success) {
+        response.send(result);
+      } else {
+        result.description = "Qualcosa non va:";
+        response.status(HttpResponseStatus.BAD_PARAMS).send(result);
       }
     } catch (e) {
       next(e);
