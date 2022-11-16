@@ -34,13 +34,15 @@
       </div>
     </nav>
     <div class="container px-5 py-3 text-bg-light">
-      <RouterView />
+      <RouterView v-if="!loading" />
+      <Loading :loading="loading" />
     </div>
   </div>
 </template>
 
 <script>
 import { Auth } from "./api/auth";
+import Loading from "./components/Loading.vue";
 import { sessionStore } from "./stores/session";
 
 export default {
@@ -49,19 +51,26 @@ export default {
 
     return { session };
   },
+  data() {
+    return {
+      loading: false
+    };
+  },
   computed: {
     activePage() {
       return this.$route.name;
     }
   },
   methods: {
-    async checkAuthentication() {
+    async initApplication() {
       try {
+        this.loading = true;
         let user = await Auth.me();
         this.session.setSession(user);
       } catch (e) {
         this.session.setSession(null);
       }
+      this.loading = false;
     },
     async logout() {
       try {
@@ -74,7 +83,10 @@ export default {
     }
   },
   created() {
-    this.checkAuthentication();
+    this.initApplication();
+  },
+  components: {
+    Loading
   }
 };
 </script>

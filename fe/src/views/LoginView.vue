@@ -34,7 +34,6 @@ export default {
   }),
   methods: {
     init() {
-      console.info(this.session.isAuthenticated);
       if (this.session.isAuthenticated) this.$router.replace({ path: "/" });
       this.loading = false;
       this.username = null;
