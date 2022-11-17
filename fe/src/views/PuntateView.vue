@@ -4,12 +4,12 @@
     <GenericError v-if="error" />
     <Loading :loading="loading" />
     <div class="row">
-      <div v-if="!loading" class="col-4 col-md-2">
+      <div v-if="!loading" class="col-md-3 mb-3">
         <ul class="list-group">
           <li v-for="item in puntate" class="list-group-item" :class="{ active: active(item.puntata_pn) }" @click="selectPuntata(item)">{{ formatDate(item.puntata_pn, "DD.MM.YYYY") }}</li>
         </ul>
       </div>
-      <div class="col-8 col-md-10">
+      <div class="col-md-9">
         <Loading :loading="loadingPuntata" />
         <div v-if="!loadingPuntata" class="row row-cols-1 row-cols-md-2">
           <div class="col" v-for="item in squadre">
