@@ -1,8 +1,8 @@
 <template>
   <div v-if="result" class="alert mb-4" :class="{ 'alert-danger': !result.success, 'alert-success': result.success }" role="alert">
-    {{ result.description }}
-    <ul v-if="result.messages && result.messages.length">
-      <li v-for="item of result.messages">{{ item }}</li>
+    {{ result.message }}
+    <ul v-if="result.errors && result.errors.length">
+      <li v-for="item of result.errors">{{ item }}</li>
     </ul>
   </div>
 </template>

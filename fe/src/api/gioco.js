@@ -40,6 +40,19 @@ export class GiocoAPIs {
     }
   }
 
+  static async squadre() {
+    try {
+      let response = await ApiRequest.get("gioco/squadre");
+      if (response.status < 400) {
+        return Promise.resolve(response.data);
+      } else {
+        return Promise.reject(`gioco/squadre responds with status ${response.status}`);
+      }
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
   static async politiciSelect() {
     try {
       let response = await ApiRequest.get("gioco/politici");

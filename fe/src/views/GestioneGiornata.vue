@@ -4,7 +4,7 @@
     <router-link to="/gestione-giornate" class="btn btn-primary btn-sm mb-2">&lt;&nbsp;Indietro</router-link>
     <Loading :loading="loading" />
     <GenericError v-if="error" />
-    <Result :result="result" />
+    <Result class="col-lg-6" :result="result" />
     <form v-if="!error && !loading">
       <div class="row mb-3">
         <div class="col-lg-3">
@@ -51,55 +51,64 @@
 <script>
 import moment from "moment";
 import { GiocoAPIs } from "../api/gioco";
+import GenericError from "../components/GenericError.vue";
+import Loading from "../components/Loading.vue";
+import PageTitle from "../components/PageTitle.vue";
+import Result from "../components/Result.vue";
 
 export default {
-  data: () => ({
-    loading: false,
-    saving: false,
-    error: false,
-    result: null,
-    politici: [],
-    giornata: {
-      data: moment().format("YYYY-MM-DD"),
-      punteggi: []
-    }
-  }),
-  methods: {
-    async init() {
-      try {
-        this.loading = true;
-        this.saving = false;
-        this.error = false;
-        this.politici = [];
-        this.result = null;
-        this.giornata = {
-          data: moment().format("YYYY-MM-DD"),
-          punteggi: []
-        };
-        this.politici = await GiocoAPIs.politiciSelect();
-      } catch (e) {
-        console.error(e);
-        this.error = true;
-      }
-      this.loading = false;
+    data: () => ({
+        loading: false,
+        saving: false,
+        error: false,
+        result: null,
+        politici: [],
+        giornata: {
+            data: moment().format("YYYY-MM-DD"),
+            punteggi: []
+        }
+    }),
+    methods: {
+        async init() {
+            try {
+                this.loading = true;
+                this.saving = false;
+                this.error = false;
+                this.politici = [];
+                this.result = null;
+                this.giornata = {
+                    data: moment().format("YYYY-MM-DD"),
+                    punteggi: []
+                };
+                this.politici = await GiocoAPIs.politiciSelect();
+            }
+            catch (e) {
+                console.error(e);
+                this.error = true;
+            }
+            this.loading = false;
+        },
+        addElement() {
+            this.giornata.punteggi.push({ punteggio: 0 });
+        },
+        removeElement(index) {
+            this.giornata.punteggi.splice(index, 1);
+        },
+        async save() {
+            try {
+                this.result = await GiocoAPIs.saveGiornata(this.giornata);
+                if (this.result.success)
+                    this.$router.replace({ path: "/gestione-giornate" });
+            }
+            catch (e) {
+                this.error = true;
+                console.error(e);
+            }
+        }
     },
-    addElement() {
-      this.giornata.punteggi.push({ punteggio: 0 });
+    created() {
+        this.init();
     },
-    removeElement(index) {
-      this.giornata.punteggi.splice(index, 1);
-    },
-    async save() {
-      try {
-        this.result = await GiocoAPIs.saveGiornata(this.giornata);
-      } catch (e) {
-        this.error = true;
-        console.error(e);
-      }
-    }
-  },
-  created() {
-    this.init();
-  }
+    components: { Loading, GenericError, Result, PageTitle }
 };
 </script>

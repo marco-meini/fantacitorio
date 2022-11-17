@@ -1,5 +1,6 @@
 import moment from "moment";
 import { HttpResponseStatus } from "../lib/enums.mjs";
+import { Result } from "../lib/result.mjs";
 import { AuthenticationMiddleware } from "../middlewares/auth-middlewares.mjs";
 import { Abstract_Controller } from "./abstract-controller.mjs";
 
@@ -13,6 +14,7 @@ class GiocoController extends Abstract_Controller {
     this.router.get("/classifica", this.classifica.bind(this));
     this.router.get("/giornate", this.giornate.bind(this));
     this.router.get("/politici", this.politici.bind(this));
+    this.router.get("/squadre", this.squadre.bind(this));
     this.router.put("/giornata", AuthenticationMiddleware.checkAuthentication(env), this.editGiornata.bind(this));
   }
 
@@ -67,6 +69,21 @@ class GiocoController extends Abstract_Controller {
    * @param {import("express").Response} response
    * @param {import("express").NextFunction} next
    */
+   async squadre(request, response, next) {
+    try {
+      let squadre = await this.env.pgModel.gioco.squadre();
+      response.send(squadre);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  /**
+   *
+   * @param {import("express").Request} request
+   * @param {import("express").Response} response
+   * @param {import("express").NextFunction} next
+   */
   async editGiornata(request, response, next) {
     try {
       /**
@@ -75,22 +92,21 @@ class GiocoController extends Abstract_Controller {
        * punteggi: Array<{id: number, punteggio: number}>
        * }}
        */
-      let data = request.body;
-      let result = { success: true, description: "Giornata salvata", messages: [] };
+      let requestBody = request.body;
+      let result = new Result("Giornata salvata", "Qualcosa non va:");
 
-      let date = moment(data.data, "YYYY-MM-DD");
-      if (!date.isValid()) {
-        result.success = false;
-        result.messages.push("Data non valida");
+      let puntata = moment(requestBody.data, "YYYY-MM-DD");
+      if (!puntata.isValid()) {
+        result.addError("Data non valida");
       }
 
-      if (data.punteggi.length === 0) {
-        result.success = false;
-        result.messages.push("Inserire almeno un punteggio di un politico");
+      if (requestBody.punteggi.length === 0) {
+        result.addError("Inserire almeno un punteggio di un politico");
       } else {
-        let punteggio0 = data.punteggi.filter((item) => item.punteggio === 0).length;
+        let punteggio0 = requestBody.punteggi.filter((item) => item.punteggio === 0).length;
+        let noPolitico = requestBody.punteggi.filter((item) => !item.id).length;
         let counts = {};
-        data.punteggi.forEach((item) => {
+        requestBody.punteggi.forEach((item) => {
           counts[item.id] = (counts[item.id] || 0) + 1;
         });
         let duplicates = false;
@@ -98,20 +114,21 @@ class GiocoController extends Abstract_Controller {
           if (counts[p] > 1) duplicates = true;
         }
         if (punteggio0) {
-          result.success = false;
-          result.messages.push("Ci sono politici con punteggio 0");
+          result.addError("Ci sono politici con punteggio 0");
+        }
+        if (noPolitico) {
+          result.addError("Ci sono punteggi senza politico, duro!");
         }
         if (duplicates) {
-          result.success = false;
-          result.messages.push("Ci sono politici duplicati");
+          result.addError("Ci sono politici duplicati");
         }
       }
 
       if (result.success) {
-        response.send(result);
+        await this.env.pgModel.gioco.salvaGiornata(puntata, requestBody.punteggi);
+        response.send(result.getResult());
       } else {
-        result.description = "Qualcosa non va:";
-        response.status(HttpResponseStatus.BAD_PARAMS).send(result);
+        response.status(HttpResponseStatus.BAD_PARAMS).send(result.getResult());
       }
     } catch (e) {
       next(e);

@@ -19,6 +19,9 @@
               <router-link :class="{ active: activePage === 'home' }" class="nav-link" to="/">Home</router-link>
             </li>
             <li class="nav-item">
+              <router-link :class="{ active: activePage === 'squadre' }" class="nav-link" to="/squadre">Squadre</router-link>
+            </li>
+            <li class="nav-item">
               <router-link :class="{ active: activePage === 'punteggi' }" class="nav-link" to="/punteggi">Punteggi</router-link>
             </li>
             <li v-if="session.isAuthenticated" class="nav-item">
@@ -46,47 +49,50 @@
 
 <script>
 import { Auth } from "./api/auth";
+import Loading from "./components/Loading.vue";
 import { sessionStore } from "./stores/session";
 
 export default {
-  setup() {
-    const session = sessionStore();
-
-    return { session };
-  },
-  data() {
-    return {
-      loading: false
-    };
-  },
-  computed: {
-    activePage() {
-      return this.$route.name;
-    }
-  },
-  methods: {
-    async initApplication() {
-      try {
-        this.loading = true;
-        let user = await Auth.me();
-        this.session.setSession(user);
-      } catch (e) {
-        this.session.setSession(null);
-      }
-      this.loading = false;
+    setup() {
+        const session = sessionStore();
+        return { session };
     },
-    async logout() {
-      try {
-        await Auth.logout();
-        sessionStorage.removeItem("access_token");
-        this.session.setSession(null);
-      } catch (e) {
-        console.error(e);
-      }
-    }
-  },
-  created() {
-    this.initApplication();
-  }
+    data() {
+        return {
+            loading: false
+        };
+    },
+    computed: {
+        activePage() {
+            return this.$route.name;
+        }
+    },
+    methods: {
+        async initApplication() {
+            try {
+                this.loading = true;
+                let user = await Auth.me();
+                this.session.setSession(user);
+            }
+            catch (e) {
+                this.session.setSession(null);
+            }
+            this.loading = false;
+        },
+        async logout() {
+            try {
+                await Auth.logout();
+                sessionStorage.removeItem("access_token");
+                this.session.setSession(null);
+            }
+            catch (e) {
+                console.error(e);
+            }
+        }
+    },
+    created() {
+        this.initApplication();
+    },
+    components: { Loading }
 };
 </script>

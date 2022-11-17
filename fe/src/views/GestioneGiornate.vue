@@ -29,33 +29,37 @@
 <script>
 import { GiocoAPIs } from "../api/gioco";
 import moment from "moment";
+import GenericError from "../components/GenericError.vue";
+import Loading from "../components/Loading.vue";
+import PageTitle from "../components/PageTitle.vue";
 
 export default {
-  data: () => ({
-    loading: false,
-    error: false,
-    giornate: []
-  }),
-  methods: {
-    async fetchGiornate() {
-      try {
-        this.loading = true;
-        this.giornate = await GiocoAPIs.giornate();
-      } catch (e) {
-        console.error(e);
-      }
-      this.loading = false;
+    data: () => ({
+        loading: false,
+        error: false,
+        giornate: []
+    }),
+    methods: {
+        async fetchGiornate() {
+            try {
+                this.loading = true;
+                this.giornate = await GiocoAPIs.giornate();
+            }
+            catch (e) {
+                console.error(e);
+            }
+            this.loading = false;
+        },
+        formatDate(date) {
+            return moment(date).format("DD.MM.YYYY");
+        },
+        add() {
+        },
+        edit() { }
     },
-    formatDate(date) {
-      return moment(date).format("DD.MM.YYYY");
+    created() {
+        this.fetchGiornate();
     },
-    add() {
-
-    },
-    edit() {}
-  },
-  created() {
-    this.fetchGiornate();
-  }
+    components: { GenericError, Loading, PageTitle }
 };
 </script>

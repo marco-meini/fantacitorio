@@ -19,47 +19,50 @@
 
 <script>
 import { Auth } from "../api/auth";
+import PageTitle from "../components/PageTitle.vue";
 import { sessionStore } from "../stores/session";
 
 export default {
-  setup() {
-    const session = sessionStore();
-
-    return { session };
-  },
-  data: () => ({
-    loading: false,
-    username: null,
-    password: null,
-    error: false
-  }),
-  methods: {
-    init() {
-      if (this.session.isAuthenticated) this.$router.replace({ path: "/" });
-      this.loading = false;
-      this.username = null;
-      this.password = null;
-      this.error = null;
+    setup() {
+        const session = sessionStore();
+        return { session };
     },
-    async login() {
-      try {
-        this.loading = true;
-        this.error = false;
-        let session = await Auth.login(this.username, this.password);
-        if (session && session.access_token && session.user) {
-          sessionStorage.setItem("access_token", session.access_token);
-          this.session.setSession(session.user);
-          this.$router.replace({ path: "/" });
+    data: () => ({
+        loading: false,
+        username: null,
+        password: null,
+        error: false
+    }),
+    methods: {
+        init() {
+            if (this.session.isAuthenticated)
+                this.$router.replace({ path: "/" });
+            this.loading = false;
+            this.username = null;
+            this.password = null;
+            this.error = null;
+        },
+        async login() {
+            try {
+                this.loading = true;
+                this.error = false;
+                let session = await Auth.login(this.username, this.password);
+                if (session && session.access_token && session.user) {
+                    sessionStorage.setItem("access_token", session.access_token);
+                    this.session.setSession(session.user);
+                    this.$router.replace({ path: "/" });
+                }
+            }
+            catch (e) {
+                console.error(e);
+                this.error = true;
+            }
+            this.loading = false;
         }
-      } catch (e) {
-        console.error(e);
-        this.error = true;
-      }
-      this.loading = false;
-    }
-  },
-  created() {
-    this.init();
-  }
+    },
+    created() {
+        this.init();
+    },
+    components: { PageTitle }
 };
 </script>
