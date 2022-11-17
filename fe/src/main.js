@@ -7,6 +7,7 @@ import vSelect from "vue-select";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap";
+import "bootstrap-icons/font/bootstrap-icons.css"
 import "./assets/main.css";
 import 'vue-select/dist/vue-select.css';
 

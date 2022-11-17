@@ -22,10 +22,10 @@
               <router-link :class="{ active: activePage === 'squadre' }" class="nav-link" to="/squadre">Squadre</router-link>
             </li>
             <li class="nav-item">
-              <router-link :class="{ active: activePage === 'punteggi' }" class="nav-link" to="/punteggi">Punteggi</router-link>
+              <router-link :class="{ active: activePage === 'puntate' }" class="nav-link" to="/puntate">Puntate</router-link>
             </li>
             <li v-if="session.isAuthenticated" class="nav-item">
-              <router-link :class="{ active: activePage === 'gestione-giornate' || activePage === 'gestione-giornata' }" class="nav-link" to="/gestione-giornate">Gestione Giornate</router-link>
+              <router-link :class="{ active: activePage === 'gestione-giornate' || activePage === 'gestione-giornata' }" class="nav-link" to="/gestione-giornate">Gestione Puntate</router-link>
             </li>
           </ul>
           <ul class="navbar-nav d-flex">

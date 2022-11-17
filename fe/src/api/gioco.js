@@ -83,4 +83,43 @@ export class GiocoAPIs {
       return Promise.reject(e);
     }
   }
+
+  static async punteggiGiornata(puntata) {
+    try {
+      let response = await ApiRequest.get(`gioco/giornata/${puntata}/punteggi`, { authenticate: true });
+      if (response.status < 400) {
+        return Promise.resolve(response.data);
+      } else {
+        return Promise.reject(`get gioco/giornata/${puntata}/punteggi responds with status ${response.status}`);
+      }
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
+  static async deleteGiornata(puntata) {
+    try {
+      let response = await ApiRequest.delete(`gioco/giornata/${puntata}`, { authenticate: true });
+      if (response.status < 400 || response.status === 400) {
+        return Promise.resolve();
+      } else {
+        return Promise.reject(`delete gioco/giornata/${puntata} responds with status ${response.status}`);
+      }
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
+  static async puntata(puntata) {
+    try {
+      let response = await ApiRequest.get(`gioco/giornata/${puntata}`);
+      if (response.status < 400) {
+        return Promise.resolve(response.data);
+      } else {
+        return Promise.reject(`gioco/giornata/${puntata} responds with status ${response.status}`);
+      }
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
 }

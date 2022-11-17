@@ -36,7 +36,7 @@ class Gioco extends Abstract_PgModel {
 
   async giornate() {
     try {
-      let result = await this.__connection.query({ sql: "select distinct puntata_pn from punteggi" });
+      let result = await this.__connection.query({ sql: "select distinct puntata_pn from punteggi order by puntata_pn desc" });
       return Promise.resolve(result.rows);
     } catch (e) {
       return Promise.reject(e);
@@ -119,6 +119,59 @@ class Gioco extends Abstract_PgModel {
         await this.__connection.rollback(tc);
         throw e;
       }
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
+  /**
+   *
+   * @param {string} giornata
+   * @returns {Promise<Array<{id: number, punteggio: number>}}
+   */
+  async punteggiGiornata(giornata) {
+    try {
+      let result = await this.__connection.query({
+        sql: "SELECT id_politico_pn as id,punteggio_pn as punteggio FROM punteggi WHERE puntata_pn=$1",
+        replacements: [moment(giornata).format("YYYYMMDD")]
+      });
+      return Promise.resolve(result.rows);
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
+  async puntata(puntata) {
+    try {
+      let output = [];
+      let resultSquadre = await this.__connection.query({ sql: "SELECT id_sq as id,nome_sq as nome, giocatore_sq as giocatore FROM squadre order by nome_sq" });
+      if (resultSquadre.rowCount) {
+        for (let squadra of resultSquadre.rows) {
+          let sql = `SELECT id_pl as id
+          , nome_pl as nome
+          , coalesce(pn.punteggio_pn,0) as punteggio
+          FROM squadre_politici sp
+          INNER JOIN politici pl
+            on sp.id_politico_sp=pl.id_pl
+          LEFT JOIN punteggi pn
+            on pl.id_pl=pn.id_politico_pn
+            AND pn.puntata_pn=$2
+          WHERE sp.id_squadra_sp=$1
+          order by coalesce(pn.punteggio_pn,0) desc`;
+          let resultPolitici = await this.__connection.query({ sql: sql, replacements: [squadra.id, moment(puntata).format("YYYYMMDD")] });
+          output.push({
+            ...squadra,
+            totale: resultPolitici.rows.length
+              ? resultPolitici.rows.reduce((previousValue, currentValue) => {
+                  return previousValue + currentValue.punteggio;
+                }, 0)
+              : 0,
+            politici: resultPolitici.rows
+          });
+        }
+        output.sort((a, b) => b.totale - a.totale);
+      }
+      return Promise.resolve(output);
     } catch (e) {
       return Promise.reject(e);
     }

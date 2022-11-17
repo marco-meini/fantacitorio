@@ -57,58 +57,59 @@ import PageTitle from "../components/PageTitle.vue";
 import Result from "../components/Result.vue";
 
 export default {
-    data: () => ({
-        loading: false,
-        saving: false,
-        error: false,
-        result: null,
-        politici: [],
-        giornata: {
-            data: moment().format("YYYY-MM-DD"),
-            punteggi: []
-        }
-    }),
-    methods: {
-        async init() {
-            try {
-                this.loading = true;
-                this.saving = false;
-                this.error = false;
-                this.politici = [];
-                this.result = null;
-                this.giornata = {
-                    data: moment().format("YYYY-MM-DD"),
-                    punteggi: []
-                };
-                this.politici = await GiocoAPIs.politiciSelect();
-            }
-            catch (e) {
-                console.error(e);
-                this.error = true;
-            }
-            this.loading = false;
-        },
-        addElement() {
-            this.giornata.punteggi.push({ punteggio: 0 });
-        },
-        removeElement(index) {
-            this.giornata.punteggi.splice(index, 1);
-        },
-        async save() {
-            try {
-                this.result = await GiocoAPIs.saveGiornata(this.giornata);
-                if (this.result.success)
-                    this.$router.replace({ path: "/gestione-giornate" });
-            }
-            catch (e) {
-                this.error = true;
-                console.error(e);
-            }
-        }
+  data: () => ({
+    loading: false,
+    saving: false,
+    error: false,
+    result: null,
+    politici: [],
+    giornata: {
+      data: moment().format("YYYY-MM-DD"),
+      punteggi: []
+    }
+  }),
+  methods: {
+    async init() {
+      try {
+        this.loading = true;
+        this.saving = false;
+        this.error = false;
+        this.politici = [];
+        this.result = null;
+        this.politici = await GiocoAPIs.politiciSelect();
+        let edit = this.$route.params && this.$route.params.puntata;
+        let data = edit ? moment(this.$route.params.puntata) : moment();
+        this.giornata = {
+          data: data.format("YYYY-MM-DD"),
+          punteggi: edit ? await GiocoAPIs.punteggiGiornata(this.$route.params.puntata) : []
+        };
+      } catch (e) {
+        console.error(e);
+        this.error = true;
+      }
+      this.loading = false;
     },
-    created() {
-        this.init();
+    addElement() {
+      this.giornata.punteggi.push({ punteggio: 0 });
     },
-    components: { Loading, GenericError, Result, PageTitle }
+    removeElement(index) {
+      this.giornata.punteggi.splice(index, 1);
+    },
+    async save() {
+      try {
+        this.loading = true;
+        this.result = await GiocoAPIs.saveGiornata(this.giornata);
+        //if (this.result.success) this.$router.replace({ path: "/gestione-giornate" });
+      } catch (e) {
+        this.error = true;
+        console.error(e);
+      }
+      this.loading = false;
+    }
+  },
+  created() {
+    this.init();
+  },
+  components: { Loading, GenericError, Result, PageTitle }
 };
 </script>

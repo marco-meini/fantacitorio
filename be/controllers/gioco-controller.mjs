@@ -16,6 +16,9 @@ class GiocoController extends Abstract_Controller {
     this.router.get("/politici", this.politici.bind(this));
     this.router.get("/squadre", this.squadre.bind(this));
     this.router.put("/giornata", AuthenticationMiddleware.checkAuthentication(env), this.editGiornata.bind(this));
+    this.router.get("/giornata/:puntata/punteggi", AuthenticationMiddleware.checkAuthentication(env), this.punteggiPuntata.bind(this));
+    this.router.delete("/giornata/:puntata", AuthenticationMiddleware.checkAuthentication(env), this.deletePuntata.bind(this));
+    this.router.get("/giornata/:puntata", this.puntata.bind(this));
   }
 
   /**
@@ -69,7 +72,7 @@ class GiocoController extends Abstract_Controller {
    * @param {import("express").Response} response
    * @param {import("express").NextFunction} next
    */
-   async squadre(request, response, next) {
+  async squadre(request, response, next) {
     try {
       let squadre = await this.env.pgModel.gioco.squadre();
       response.send(squadre);
@@ -130,6 +133,51 @@ class GiocoController extends Abstract_Controller {
       } else {
         response.status(HttpResponseStatus.BAD_PARAMS).send(result.getResult());
       }
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  /**
+   *
+   * @param {import("express").Request} request
+   * @param {import("express").Response} response
+   * @param {import("express").NextFunction} next
+   */
+  async punteggiPuntata(request, response, next) {
+    try {
+      let punteggi = await this.env.pgModel.gioco.punteggiGiornata(request.params.puntata);
+      response.send(punteggi);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  /**
+   *
+   * @param {import("express").Request} request
+   * @param {import("express").Response} response
+   * @param {import("express").NextFunction} next
+   */
+  async deletePuntata(request, response, next) {
+    try {
+      await this.env.pgModel.gioco.deleteGiornata(request.params.puntata);
+      response.send();
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  /**
+   *
+   * @param {import("express").Request} request
+   * @param {import("express").Response} response
+   * @param {import("express").NextFunction} next
+   */
+  async puntata(request, response, next) {
+    try {
+      let puntata = await this.env.pgModel.gioco.puntata(request.params.puntata);
+      response.send(puntata);
     } catch (e) {
       next(e);
     }
